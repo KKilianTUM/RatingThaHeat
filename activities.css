@@ -89,6 +89,14 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+.btn:focus-visible,
+.icon-btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #9bb7ff;
+  outline-offset: 1px;
+}
 .btn-primary { background: var(--primary); color: white; }
 .btn-secondary { background: #eef2ff; color: #2d4cc8; }
 .btn-danger { background: #ffecef; color: var(--danger); }
@@ -140,3 +148,15 @@ body {
   z-index: 40;
 }
 .hidden { display: none !important; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

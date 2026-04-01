@@ -14,7 +14,9 @@
 
   <main class="container">
     <section class="controls">
+      <label class="sr-only" for="searchInput">Search activities</label>
       <input id="searchInput" type="text" placeholder="Search activities..." />
+      <label class="sr-only" for="categoryFilter">Filter by category</label>
       <select id="categoryFilter">
         <option value="all">All categories</option>
         <option value="city">City</option>
@@ -35,7 +37,7 @@
         <button id="closeCreateBtn" class="icon-btn" aria-label="Close">✕</button>
       </div>
 
-      <form id="createForm" class="form">
+      <form id="createForm" class="form" novalidate>
         <label>Title <input name="title" required minlength="3" /></label>
         <label>Category
           <select name="category" required>

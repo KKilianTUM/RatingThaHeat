@@ -2,7 +2,7 @@ const STORAGE_KEY = "th_activities_v1";
 
 const seedActivities = [
   {
-    id: crypto.randomUUID(),
+    id: generateId(),
     title: "Marienplatz Walk",
     category: "city",
     location: "Karlsplatz, Munich",
@@ -13,7 +13,7 @@ const seedActivities = [
     userJoined: false
   },
   {
-    id: crypto.randomUUID(),
+    id: generateId(),
     title: "Beginner Badminton",
     category: "sports",
     location: "Olympiapark Hall",
@@ -24,7 +24,7 @@ const seedActivities = [
     userJoined: false
   },
   {
-    id: crypto.randomUUID(),
+    id: generateId(),
     title: "German A1 Speaking Circle",
     category: "learning",
     location: "Public Library Room 2",
@@ -45,17 +45,24 @@ const createModal = document.getElementById("createModal");
 const detailsModal = document.getElementById("detailsModal");
 const detailsContent = document.getElementById("detailsContent");
 const toast = document.getElementById("toast");
+const openCreateBtn = document.getElementById("openCreateBtn");
+const closeCreateBtn = document.getElementById("closeCreateBtn");
+const closeDetailsBtn = document.getElementById("closeDetailsBtn");
+const createForm = document.getElementById("createForm");
 
-document.getElementById("openCreateBtn").addEventListener("click", () => openModal(createModal));
-document.getElementById("closeCreateBtn").addEventListener("click", () => closeModal(createModal));
-document.getElementById("closeDetailsBtn").addEventListener("click", () => closeModal(detailsModal));
+let lastFocusedElement = null;
 
-document.getElementById("createForm").addEventListener("submit", onCreateActivity);
+openCreateBtn.addEventListener("click", () => openModal(createModal, openCreateBtn));
+closeCreateBtn.addEventListener("click", () => closeModal(createModal));
+closeDetailsBtn.addEventListener("click", () => closeModal(detailsModal));
+
+createForm.addEventListener("submit", onCreateActivity);
 searchInput.addEventListener("input", render);
 categoryFilter.addEventListener("change", render);
 
 createModal.addEventListener("click", (e) => { if (e.target === createModal) closeModal(createModal); });
 detailsModal.addEventListener("click", (e) => { if (e.target === detailsModal) closeModal(detailsModal); });
+document.addEventListener("keydown", onGlobalKeydown);
 
 render();
 
@@ -172,7 +179,7 @@ function onCreateActivity(e) {
   const fd = new FormData(e.target);
 
   const newItem = {
-    id: crypto.randomUUID(),
+    id: generateId(),
     title: String(fd.get("title") || "").trim(),
     category: String(fd.get("category") || ""),
     location: String(fd.get("location") || "").trim(),
@@ -184,8 +191,9 @@ function onCreateActivity(e) {
   };
 
   if (newItem.title.length < 3) return showToast("Title too short.");
-  if (newItem.description.split(/\s+/).length < 5) return showToast("Description is too short.");
+  if (newItem.description.length < 20) return showToast("Description is too short (minimum 20 characters).");
   if (!newItem.datetime) return showToast("Please choose date and time.");
+  if (!Number.isFinite(newItem.capacity) || newItem.capacity < 2) return showToast("Capacity must be at least 2.");
 
   activities.unshift(newItem);
   saveActivities();
@@ -196,6 +204,11 @@ function onCreateActivity(e) {
 }
 
 function openDetails(a) {
+  if (!a) {
+    showToast("Activity details are unavailable.");
+    return;
+  }
+
   detailsContent.innerHTML = `
     <p><strong>${escapeHtml(a.title)}</strong></p>
     <p>${formatCategory(a.category)} • ${formatDate(a.datetime)}</p>
@@ -206,8 +219,18 @@ function openDetails(a) {
   openModal(detailsModal);
 }
 
-function openModal(el) { el.classList.remove("hidden"); }
-function closeModal(el) { el.classList.add("hidden"); }
+function openModal(el, triggerEl = document.activeElement) {
+  lastFocusedElement = triggerEl;
+  el.classList.remove("hidden");
+  const firstFocusable = el.querySelector("input, select, textarea, button");
+  if (firstFocusable) firstFocusable.focus();
+}
+function closeModal(el) {
+  el.classList.add("hidden");
+  if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+    lastFocusedElement.focus();
+  }
+}
 
 let toastTimer;
 function showToast(msg) {
@@ -238,4 +261,22 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function generateId() {
+  if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  return `act_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function onGlobalKeydown(e) {
+  if (e.key !== "Escape") return;
+  if (!detailsModal.classList.contains("hidden")) {
+    closeModal(detailsModal);
+    return;
+  }
+  if (!createModal.classList.contains("hidden")) {
+    closeModal(createModal);
+  }
 }
