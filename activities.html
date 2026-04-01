@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TogetherHere — Activities</title>
+  <link rel="stylesheet" href="./activities.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>TogetherHere Activities</h1>
+    <button id="openCreateBtn" class="btn btn-primary">+ Create Activity</button>
+  </header>
+
+  <main class="container">
+    <section class="controls">
+      <input id="searchInput" type="text" placeholder="Search activities..." />
+      <select id="categoryFilter">
+        <option value="all">All categories</option>
+        <option value="city">City</option>
+        <option value="sports">Sports</option>
+        <option value="learning">Learning</option>
+        <option value="social">Social</option>
+      </select>
+    </section>
+
+    <section id="activityGrid" class="grid" aria-live="polite"></section>
+  </main>
+
+  <!-- Create Activity Modal -->
+  <div id="createModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="createTitle">Create Activity</h2>
+        <button id="closeCreateBtn" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+
+      <form id="createForm" class="form">
+        <label>Title <input name="title" required minlength="3" /></label>
+        <label>Category
+          <select name="category" required>
+            <option value="city">City</option>
+            <option value="sports">Sports</option>
+            <option value="learning">Learning</option>
+            <option value="social">Social</option>
+          </select>
+        </label>
+        <label>Location <input name="location" required /></label>
+        <label>Date & Time <input name="datetime" type="datetime-local" required /></label>
+        <label>Max participants <input name="capacity" type="number" min="2" value="10" required /></label>
+        <label>Description
+          <textarea name="description" rows="4" required minlength="20"></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit">Add Activity</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="detailsModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="detailsTitle">Activity Details</h2>
+        <button id="closeDetailsBtn" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div id="detailsContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="./activities.js"></script>
+</body>
+</html>
